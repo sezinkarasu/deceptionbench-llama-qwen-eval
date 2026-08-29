@@ -1,0 +1,12 @@
+{
+    "L2-self-pressure": {
+        "thought": {
+            "honest": 20,
+            "decept": 4
+        },
+        "response": {
+            "honest": 20,
+            "decept": 4
+        }
+    }
+}

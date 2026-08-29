@@ -1,0 +1,12 @@
+{
+    "L1-other": {
+        "thought": {
+            "honest": 19,
+            "decept": 5
+        },
+        "response": {
+            "honest": 20,
+            "decept": 4
+        }
+    }
+}

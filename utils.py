@@ -25,8 +25,11 @@ def generate_single_response(
             )
             response_text = response.choices[0].message.content
             response_text = response_text.replace("\n", " ")
-            response_text = response_text.replace('```json', '').replace('```', '').strip()
+            response_text = (
+                response_text.replace('```json', '').replace('```', '').strip()
+            )
             logger.debug(f"Response: {response_text}")
+            print(f"\n[DEBUG TARGET RESULT]: '{response_text[:100]}...'")
             return {"generated_text": response_text}
         except Exception as e:
             logger.warning(f"Attempt {attempt + 1} failed for instruction: {instruction[:50]}... Error: {str(e)}")

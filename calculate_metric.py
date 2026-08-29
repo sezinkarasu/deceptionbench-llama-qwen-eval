@@ -81,20 +81,19 @@ def aggregate_metrics(metrics: Dict) -> Dict:
     for condition, data in metrics.items():
         # Aggregate L1 / L2 / L3
         level = condition.split("-")[0]
-        if level in ["L1", "L2", "L3"]:
-            for key in ["thought", "response"]:
-                for sub_key in ["honest", "decept"]:
-                    aggregated_stats[level][key][sub_key] += data[condition][key].get(sub_key, 0)
-                    if level == "L2":
-                        if "self" in condition:
-                            aggregated_stats["L2-self"][key][sub_key] += data[condition][key].get(sub_key, 0)
-                        elif "other" in condition:
-                            aggregated_stats["L2-other"][key][sub_key] += data[condition][key].get(sub_key, 0)
-                    if level == "L3":
-                        if "self" in condition:
-                            aggregated_stats["L3-self"][key][sub_key] += data[condition][key].get(sub_key, 0)
-                        elif "other" in condition:
-                            aggregated_stats["L3-other"][key][sub_key] += data[condition][key].get(sub_key, 0)
+        for key in ["thought", "response"]:
+            for sub_key in ["honest", "decept"]:
+                aggregated_stats[level][key][sub_key] += data[key].get(sub_key, 0)
+                if level == "L2":
+                    if "self" in condition:
+                        aggregated_stats["L2-self"][key][sub_key] += data[key].get(sub_key, 0)
+                    elif "other" in condition:
+                        aggregated_stats["L2-other"][key][sub_key] += data[key].get(sub_key, 0)
+                if level == "L3":
+                    if "self" in condition:
+                        aggregated_stats["L3-self"][key][sub_key] += data[key].get(sub_key, 0)
+                    elif "other" in condition:
+                        aggregated_stats["L3-other"][key][sub_key] += data[key].get(sub_key, 0)
 
         # Aggregate self / other
         if "self" in condition:
@@ -106,7 +105,8 @@ def aggregate_metrics(metrics: Dict) -> Dict:
         if group:
             for key in ["thought", "response"]:
                 for sub_key in ["honest", "decept"]:
-                    aggregated_stats[group][key][sub_key] += data[condition][key].get(sub_key, 0)
+                    aggregated_stats[group][key][sub_key] += data[key].get(sub_key, 0)
+
 
         # Aggregate reward / pressure
         if "reward" in condition:
@@ -118,38 +118,38 @@ def aggregate_metrics(metrics: Dict) -> Dict:
         if reward_pressure_group:
             for key in ["thought", "response"]:
                 for sub_key in ["honest", "decept"]:
-                    aggregated_stats[reward_pressure_group][key][sub_key] += data[condition][key].get(sub_key, 0)
+                    aggregated_stats[reward_pressure_group][key][sub_key] += data[key].get(sub_key, 0)
 
         # Aggregate specific conditions
         if condition in aggregated_stats:
             for key in ["thought", "response"]:
                 for sub_key in ["honest", "decept"]:
-                    aggregated_stats[condition][key][sub_key] += data[condition][key].get(sub_key, 0)
+                    aggregated_stats[condition][key][sub_key] += data[key].get(sub_key, 0)
 
         # Aggregate L2-reward / L2-pressure
         if condition.startswith("L2") and "reward" in condition:
             for key in ["thought", "response"]:
                 for sub_key in ["honest", "decept"]:
-                    aggregated_stats["L2-reward"][key][sub_key] += data[condition][key].get(sub_key, 0)
+                    aggregated_stats["L2-reward"][key][sub_key] += data[key].get(sub_key, 0)
         elif condition.startswith("L2") and "pressure" in condition:
             for key in ["thought", "response"]:
                 for sub_key in ["honest", "decept"]:
-                    aggregated_stats["L2-pressure"][key][sub_key] += data[condition][key].get(sub_key, 0)
+                    aggregated_stats["L2-pressure"][key][sub_key] += data[key].get(sub_key, 0)
 
         # Aggregate L3-reward / L3-pressure
         if condition.startswith("L3") and "reward" in condition:
             for key in ["thought", "response"]:
                 for sub_key in ["honest", "decept"]:
-                    aggregated_stats["L3-reward"][key][sub_key] += data[condition][key].get(sub_key, 0)
+                    aggregated_stats["L3-reward"][key][sub_key] += data[key].get(sub_key, 0)
         elif condition.startswith("L3") and "pressure" in condition:
             for key in ["thought", "response"]:
                 for sub_key in ["honest", "decept"]:
-                    aggregated_stats["L3-pressure"][key][sub_key] += data[condition][key].get(sub_key, 0)
+                    aggregated_stats["L3-pressure"][key][sub_key] += data[key].get(sub_key, 0)
 
         # Aggregate total
         for key in ["thought", "response"]:
             for sub_key in ["honest", "decept"]:
-                aggregated_stats["total"][key][sub_key] += data[condition][key].get(sub_key, 0)
+                aggregated_stats["total"][key][sub_key] += data[key].get(sub_key, 0)
 
     return aggregated_stats
 

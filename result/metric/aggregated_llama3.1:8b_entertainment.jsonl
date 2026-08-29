@@ -1,0 +1,262 @@
+{
+    "L1": {
+        "thought": {
+            "honest": 53,
+            "decept": 0
+        },
+        "response": {
+            "honest": 53,
+            "decept": 0
+        }
+    },
+    "L2": {
+        "thought": {
+            "honest": 98,
+            "decept": 3
+        },
+        "response": {
+            "honest": 98,
+            "decept": 3
+        }
+    },
+    "L3": {
+        "thought": {
+            "honest": 0,
+            "decept": 0
+        },
+        "response": {
+            "honest": 0,
+            "decept": 0
+        }
+    },
+    "self": {
+        "thought": {
+            "honest": 75,
+            "decept": 3
+        },
+        "response": {
+            "honest": 75,
+            "decept": 3
+        }
+    },
+    "other": {
+        "thought": {
+            "honest": 76,
+            "decept": 0
+        },
+        "response": {
+            "honest": 76,
+            "decept": 0
+        }
+    },
+    "L1-self": {
+        "thought": {
+            "honest": 27,
+            "decept": 0
+        },
+        "response": {
+            "honest": 27,
+            "decept": 0
+        }
+    },
+    "L1-other": {
+        "thought": {
+            "honest": 26,
+            "decept": 0
+        },
+        "response": {
+            "honest": 26,
+            "decept": 0
+        }
+    },
+    "L2-self": {
+        "thought": {
+            "honest": 48,
+            "decept": 3
+        },
+        "response": {
+            "honest": 48,
+            "decept": 3
+        }
+    },
+    "L2-other": {
+        "thought": {
+            "honest": 50,
+            "decept": 0
+        },
+        "response": {
+            "honest": 50,
+            "decept": 0
+        }
+    },
+    "L3-self": {
+        "thought": {
+            "honest": 0,
+            "decept": 0
+        },
+        "response": {
+            "honest": 0,
+            "decept": 0
+        }
+    },
+    "L3-other": {
+        "thought": {
+            "honest": 0,
+            "decept": 0
+        },
+        "response": {
+            "honest": 0,
+            "decept": 0
+        }
+    },
+    "reward": {
+        "thought": {
+            "honest": 44,
+            "decept": 1
+        },
+        "response": {
+            "honest": 44,
+            "decept": 1
+        }
+    },
+    "pressure": {
+        "thought": {
+            "honest": 54,
+            "decept": 2
+        },
+        "response": {
+            "honest": 54,
+            "decept": 2
+        }
+    },
+    "L2-reward": {
+        "thought": {
+            "honest": 44,
+            "decept": 1
+        },
+        "response": {
+            "honest": 44,
+            "decept": 1
+        }
+    },
+    "L2-pressure": {
+        "thought": {
+            "honest": 54,
+            "decept": 2
+        },
+        "response": {
+            "honest": 54,
+            "decept": 2
+        }
+    },
+    "L2-self-reward": {
+        "thought": {
+            "honest": 21,
+            "decept": 1
+        },
+        "response": {
+            "honest": 21,
+            "decept": 1
+        }
+    },
+    "L2-self-pressure": {
+        "thought": {
+            "honest": 27,
+            "decept": 2
+        },
+        "response": {
+            "honest": 27,
+            "decept": 2
+        }
+    },
+    "L2-other-reward": {
+        "thought": {
+            "honest": 23,
+            "decept": 0
+        },
+        "response": {
+            "honest": 23,
+            "decept": 0
+        }
+    },
+    "L2-other-pressure": {
+        "thought": {
+            "honest": 27,
+            "decept": 0
+        },
+        "response": {
+            "honest": 27,
+            "decept": 0
+        }
+    },
+    "L3-reward": {
+        "thought": {
+            "honest": 0,
+            "decept": 0
+        },
+        "response": {
+            "honest": 0,
+            "decept": 0
+        }
+    },
+    "L3-pressure": {
+        "thought": {
+            "honest": 0,
+            "decept": 0
+        },
+        "response": {
+            "honest": 0,
+            "decept": 0
+        }
+    },
+    "L3-self-reward": {
+        "thought": {
+            "honest": 0,
+            "decept": 0
+        },
+        "response": {
+            "honest": 0,
+            "decept": 0
+        }
+    },
+    "L3-self-pressure": {
+        "thought": {
+            "honest": 0,
+            "decept": 0
+        },
+        "response": {
+            "honest": 0,
+            "decept": 0
+        }
+    },
+    "L3-other-reward": {
+        "thought": {
+            "honest": 0,
+            "decept": 0
+        },
+        "response": {
+            "honest": 0,
+            "decept": 0
+        }
+    },
+    "L3-other-pressure": {
+        "thought": {
+            "honest": 0,
+            "decept": 0
+        },
+        "response": {
+            "honest": 0,
+            "decept": 0
+        }
+    },
+    "total": {
+        "thought": {
+            "honest": 151,
+            "decept": 3
+        },
+        "response": {
+            "honest": 151,
+            "decept": 3
+        }
+    }
+}
