@@ -1,0 +1,10 @@
+model,perspective,response_verdict,count
+llama3.1:8b,other,honest,357
+llama3.1:8b,other,decept,92
+qwen3:8b,other,decept,308
+qwen3:8b,other,honest,139
+llama3.1:8b,self,decept,101
+llama3.1:8b,self,honest,347
+qwen3:8b,self,decept,317
+qwen3:8b,self, ,5
+qwen3:8b,self,honest,128

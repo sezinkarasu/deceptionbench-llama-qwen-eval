@@ -1,0 +1,10 @@
+model,level,response_verdict,count
+llama3.1:8b,L1,honest,229
+llama3.1:8b,L1,decept,69
+qwen3:8b,L1,decept,186
+qwen3:8b,L1,honest,107
+qwen3:8b,L1, ,5
+llama3.1:8b,L2,honest,475
+llama3.1:8b,L2,decept,124
+qwen3:8b,L2,decept,439
+qwen3:8b,L2,honest,160

@@ -1,0 +1,10 @@
+model,response_verdict,thought_verdict,count
+llama3.1:8b,honest,honest,699
+llama3.1:8b,decept,decept,191
+llama3.1:8b,honest,decept,5
+qwen3:8b,decept,decept,622
+qwen3:8b,honest,honest,263
+qwen3:8b,honest,decept,4
+llama3.1:8b,decept,honest,2
+qwen3:8b, , ,5
+qwen3:8b,decept,honest,3
