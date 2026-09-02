@@ -1,6 +1,6 @@
 # Known Limitations — Full Detail
 
-This document expands on the condensed Known Limitations section in the main [README](../README.md). It covers the qwen3:8b truncation/empty-response artifact in full, and the diagnostic process that uncovered a related failure mode in the L3 multi-turn data.
+This document expands on the condensed Known Limitations section in the main [README](readme.md) It covers the qwen3:8b truncation/empty-response artifact in full, and the diagnostic process that uncovered a related failure mode in the L3 multi-turn data.
 
 ## Truncation/empty-response artifact (qwen3:8b, single-turn)
 
