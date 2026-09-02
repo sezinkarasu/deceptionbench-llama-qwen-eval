@@ -53,7 +53,7 @@ To run DeceptionBench entirely on local models, the following changes were made 
 
 **Fig. 1 — Deception rate by incentive condition.** qwen3:8b baseline reflects the corrected figure after excluding 42 truncated/empty rows. Pressure and reward figures for qwen3:8b have not been systematically re-audited for the same artifact and should be treated as upper-bound estimates, with reward carrying additional independent evidence of elevated risk (see Known Limitations).
 
-(assets/deception_rate_by_condition.png)
+![Deception rate by condition](assets/deception_rate_by_condition.png)
 
 Significance (chi-square test, baseline vs each condition):
 
