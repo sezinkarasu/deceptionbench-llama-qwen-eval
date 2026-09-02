@@ -1,6 +1,25 @@
 # Known Limitations — Full Detail
 
-This document expands on the condensed Known Limitations section in the main [README](readme.md) It covers the qwen3:8b truncation/empty-response artifact in full, and the diagnostic process that uncovered a related failure mode in the L3 multi-turn data.
+This document expands on the Known Limitations section in the main [README](readme.md). 
+I'm covering the qwen3:8b truncation/empty-response artifact in full here, along with 
+the diagnostic process that led me to it — I first noticed a related failure mode while 
+reviewing the L3 multi-turn data, which is what prompted me to go back and audit the 
+single-turn baseline results too.
+
+## Truncation/empty-response artifact (qwen3:8b, single-turn)
+
+I first noticed this while reviewing the L3 multi-turn output, where nearly all qwen3:8b 
+generations showed the same problem: empty or truncated `response_text`. That led me to 
+go back and check the L1-baseline single-turn condition for the same issue, since I 
+suspected it might not be limited to multi-turn scenarios.
+
+A manual audit of the qwen3:8b L1-baseline condition found 42 rows (of 293, ~14%) where 
+`response_text` was empty or truncated mid-generation, yet a `decept`/`honest` verdict 
+was still assigned by the judge model. This includes 5 fully-blank rows (`response_text`, 
+`thought_verdict`, and `response_verdict` all empty), consistent with a dropped or failed 
+API call during the run. Truncated rows were disproportionately labeled `decept` (roughly 
+4:1 decept:honest among the 42).
+
 
 ## Truncation/empty-response artifact (qwen3:8b, single-turn)
 
