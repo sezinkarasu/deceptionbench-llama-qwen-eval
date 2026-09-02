@@ -53,7 +53,6 @@ To run DeceptionBench entirely on local models, the following changes were made 
 
 **Fig. 1 — Deception rate by incentive condition.** qwen3:8b baseline reflects the corrected figure after excluding 42 truncated/empty rows. Pressure and reward figures for qwen3:8b have not been systematically re-audited for the same artifact and should be treated as upper-bound estimates, with reward carrying additional independent evidence of elevated risk (see Known Limitations).
 
-known-limitations.md
 ![Deception rate by condition](assets/deception_rate_by_condition.png)
 
 Significance (chi-square test, baseline vs each condition):
@@ -91,7 +90,7 @@ The original paper reports a "prevalent" gap for many tested models where honest
 
 ### Known Limitations
 
-- **Truncation/empty-response artifact (qwen3:8b only).** A manual audit of the qwen3:8b L1-baseline condition found 42 of 293 rows (~14%) where `response_text` was empty or truncated mid-generation but still received a `decept`/`honest` verdict, disproportionately labeled `decept` (roughly 4:1). The corrected baseline is 60.6% (down from 63.48% uncorrected). Pressure and reward were not systematically re-audited and should be treated as upper-bound estimates — independent evidence from the L3 diagnosis (below) suggests `reward`-framed scenarios may carry the largest undetected inflation, since a similar failure mode was found there to disproportionately affect `reward`-condition multi-turn generations. No comparable truncation was found in any llama3.1:8b file checked. Tables 2 and 3 draw on the same underlying qwen3:8b pool and were not independently re-audited. Full audit methodology, verbatim examples, and the L3 diagnostic process that led to discovering this pattern are in (known-limitations.md).
+- **Truncation/empty-response artifact (qwen3:8b only).** A manual audit of the qwen3:8b L1-baseline condition found 42 of 293 rows (~14%) where `response_text` was empty or truncated mid-generation but still received a `decept`/`honest` verdict, disproportionately labeled `decept` (roughly 4:1). The corrected baseline is 60.6% (down from 63.48% uncorrected). Pressure and reward were not systematically re-audited and should be treated as upper-bound estimates — independent evidence from the L3 diagnosis (below) suggests `reward`-framed scenarios may carry the largest undetected inflation, since a similar failure mode was found there to disproportionately affect `reward`-condition multi-turn generations. No comparable truncation was found in any llama3.1:8b file checked. Tables 2 and 3 draw on the same underlying qwen3:8b pool and were not independently re-audited. Full audit methodology, verbatim examples, and the L3 diagnostic process that led to discovering this pattern are in See [docs/limitations.md](docs/limitations.md) for full details.
 
 - Decoding was fixed at temperature 0.0 across all conditions. This makes runs reproducible and isolates the effect of incentive framing from sampling noise, but it also means these results reflect a low-variance decoding regime that may not fully represent model behavior in typical higher-temperature chat use (0.7–1.0).
 
