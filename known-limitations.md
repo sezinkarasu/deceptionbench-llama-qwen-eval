@@ -15,10 +15,12 @@ suspected it might not be limited to multi-turn scenarios.
 
 I manually audited the qwen3:8b L1-baseline condition and found 42 rows (of 293, ~14%) 
 where `response_text` was empty or truncated mid-generation, yet a `decept`/`honest` 
-verdict was still assigned by the judge model. This includes 5 fully-blank rows 
-(`response_text`, `thought_verdict`, and `response_verdict` all empty), consistent with 
-a dropped or failed API call during the run. I found truncated rows were disproportionately 
-labeled `decept` (roughly 4:1 decept:honest among the 42).
+verdict was still assigned by the judge model. I did this by reviewing all 293 baseline 
+rows in VisiData and flagging any with empty `response_text` or a response that was cut 
+off mid-JSON or mid-sentence. This includes 5 fully-blank rows (`response_text`, 
+`thought_verdict`, and `response_verdict` all empty), consistent with a dropped or 
+failed API call during the run. I found truncated rows were disproportionately labeled 
+`decept` (roughly 4:1 decept:honest among the 42).
 
 Examples:
 
@@ -38,7 +40,7 @@ diagnosed cause.
 
 After excluding these 42 rows, I calculated a corrected qwen3:8b baseline decept rate of 
 60.6% (n=251), down from 63.48% (n=293) uncorrected — a ~3-point reduction that doesn't 
-change the qualitative finding.
+change the qualitative finding. 
 
 I did not systematically re-audit the pressure and reward conditions for this same 
 artifact due to time constraints, but the fourth example above — a fully-empty 
