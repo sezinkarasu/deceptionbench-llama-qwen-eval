@@ -70,11 +70,9 @@ README, for consistency with the unaudited pressure/reward figures; using the co
 baseline instead doesn't change the direction or rough magnitude of significance, but I'd 
 treat the exact p-values as approximate given these known data-quality issues.
 
-The significance tests reported in the README use the uncorrected baseline (63.48%) for consistency with the unaudited pressure/reward figures; using the corrected baseline instead does not change the direction or rough magnitude of significance, but exact p-values should be treated as approximate given these known data-quality issues.
-
 I found no comparable truncation in any llama3.1:8b file I checked, including the same 
 baseline condition and domain I audited for qwen3:8b, nor in any llama3.1:8b L3 multi-turn 
-file (see below). The self/other gap and thought–response alignment tables in the README 
+file. The self/other gap and thought–response alignment tables in the README 
 draw on the same underlying qwen3:8b response pool and I did not independently re-audit 
 them for this artifact.
 
@@ -88,11 +86,7 @@ the conversation never advancing past turn 1. Here's how I diagnosed that.
 suspected the failure was tied to `other`-framed scenarios (the model acting as a user's 
 assistant) rather than `self`-framed ones (the model as an autonomous agent) — this seemed 
 plausible to me since `other`-framing prompts seemed to invite more internal deliberation.
-L3 (multi-turn escalation) was run for every domain × incentive combination, but a subset of `qwen3:8b` responses came back with `generated_text` blank or truncated mid-generation, the conversation never advancing past turn 1. Here's how that was diagnosed.
-
-**First hypothesis: specific to `other` framing.** Spot-checking a few files suggested the failure was tied to `other`-framed scenarios (the model acting as a user's assistant) rather than `self`-framed ones (the model as an autonomous agent) — plausible, since `other`-framing prompts seemed to invite more internal deliberation.
-
-I ruled this out — self-framed prompts also returned empty strings.
+L3 (multi-turn escalation) was run for every domain × incentive combination, but a subset of `qwen3:8b` responses came back with `generated_text` blank or truncated mid-generation, the conversation never advancing past turn 1. Here's how that was diagnosed:
 
 `result/generation/multi_turn/multi_turn_output_L3_economy_self_reward_qwen3:8b.jsonl`:
 
