@@ -140,9 +140,9 @@ incentives.
 L1-baseline condition. This table draws on the same underlying qwen3:8b response pool 
 and may be affected similarly, but I haven't independently re-audited it.
 
-The original paper reports ~20-point self/other gaps for models like GPT-4o and Gemini, 
+The original paper reports a 20% self/other gap for models like GPT-4o and Gemini, 
 attributing this to self-serving bias, and identifies the Claude family as an exception 
-with minimal gap. Both llama3.1:8b and qwen3:8b show small gaps (~2 pts) in my data, 
+with minimal gap. Both llama3.1:8b and qwen3:8b show small gaps (2%) in my data, 
 patterning closer to the paper's Claude-family results than its GPT/Gemini results — 
 neither model shows a strong egoistic bias under self-framing in this dataset.
 
