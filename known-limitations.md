@@ -1,4 +1,4 @@
-# Known Limitations — Full Detail
+# Known Limitations
 
 This document expands on the Known Limitations section in the main [README](readme.md). 
 I'm covering the qwen3:8b truncation/empty-response artifact in full here, along with 
