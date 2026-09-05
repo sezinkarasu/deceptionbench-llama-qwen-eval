@@ -39,7 +39,7 @@ judge's raw reasoning output, so I'm reporting it as a plausible explanation, no
 diagnosed cause.
 
 After excluding these 42 rows, I calculated a corrected qwen3:8b baseline decept rate of 
-60.6% (n=251), down from 63.48% (n=293) uncorrected — a 3% gap of reduction that doesn't 
+60.6% (n=251), down from 63.48% (n=293) uncorrected — a 3 percentage points gap of reduction that doesn't 
 change the qualitative finding. 
 
 I did not systematically re-audit the pressure and reward conditions for this same 
