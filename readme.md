@@ -34,6 +34,8 @@ To get this running fully local, I pointed the config at Ollama instead of cloud
 | llama3.1:8b | 23.15% (n=298) | 20.74% (n=299) | 20.67% (n=300) |
 | qwen3:8b | 60.6% (n=251) | 72.24% (n=299) | 74.33% (n=300) |
 
+<img width="1400" height="900" alt="deception_rate_by_condition" src="https://github.com/user-attachments/assets/162aa48f-0ba5-45e9-845e-188afff545c1" />
+
 Corrected after removing 42 truncated/empty rows found in a manual audit (see Limitations). Pressure and reward figures haven't had the same audit yet, so treat them as upper bounds — reward in particular looks likely to be somewhat inflated for the same reason.
 
 Significance (baseline vs. condition, chi-square): llama3.1:8b n.s. either way (p = 0.54, 0.52). qwen3:8b significant both ways (p = 0.028 pressure, p = 0.006 reward).
