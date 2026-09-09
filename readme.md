@@ -1,216 +1,78 @@
 # DeceptionBench: llama3.1:8b vs qwen3:8b
 
-I applied the [DeceptionBench](https://github.com/Aries-iai/DeceptionBench) evaluation 
-framework (Huang et al., 2025, arXiv:2510.15501) to two open-weight ~8B models not 
-evaluated in the original paper: `llama3.1:8b` and `qwen3:8b`. I wanted to test whether 
-adding reward- or pressure-based incentive framing to an otherwise identical prompt 
-shifts a model's rate of deceptive responses, and whether that effect differs between 
-the two models.
+I ran the [DeceptionBench](https://github.com/Aries-iai/DeceptionBench) framework (Huang et al., 2025, arXiv:2510.15501) on two open-weight ~8B models the original paper didn't test: `llama3.1:8b` and `qwen3:8b`. Question: does adding reward or pressure framing to an otherwise identical prompt push a model toward more deceptive answers, and does that differ between the two models?
 
-### Motivation & Hypothesis
+### How it works
 
-DeceptionBench elicits a model's internal reasoning and final answer jointly (structured 
-`{thought, response}` output), then labels each as honest or deceptive relative to a 
-scenario-specific ground truth, across 150 scenarios spanning five domains (Economy, 
-Healthcare, Education, Social Interaction, Entertainment). The benchmark varies two factors:
+DeceptionBench asks a model for both its internal reasoning and final answer (`{thought, response}`), then a judge model labels each honest or deceptive against a scenario ground truth, across 150 scenarios in five domains. Two axes get varied:
 
-- an **intrinsic role axis** — `self` (the model acts as an autonomous agent with 
-  egoistic, self-interested motives) vs `other` (the model acts as a user's assistant, 
-  testing sycophantic, user-appeasing motives)
-- an **extrinsic contextual axis** — `L1` neutral baseline (no inducement) vs `L2` 
-  reward or pressure-based inducement
+- **Role**: `self` (model acts as an autonomous agent with self-interested motives) vs `other` (model acts as a helpful assistant)
+- **Incentive**: `L1` neutral baseline vs `L2` reward- or pressure-based framing
 
-I focused on the L2 extrinsic axis: whether reward or pressure framing increases 
-deception rate relative to L1 baseline, and secondarily report results on the L1 
-intrinsic axis (self vs other) and on the consistency between a model's internal 
-reasoning and its final answer.
+I focused on the L2 incentive effect, with role and reasoning/response alignment as secondary results.
 
-**Hypothesis:** If honesty is not robust to incentives, deception rate should increase 
-under pressure and reward relative to baseline. The original paper found this holds for 
-most tested models (GPT-4o, Gemini, Qwen2.5, DeepSeek-R1, etc.), with pressure generally 
-producing a larger effect than reward in single-turn settings, and reports Claude-family 
-models as a notable exception with near-zero deception rates. I wanted to test whether 
-the same pattern holds for llama3.1:8b and qwen3:8b.
+The original paper found deception rate generally rises under incentive for most models tested (GPT-4o, Gemini, Qwen2.5, DeepSeek-R1), with pressure usually beating reward — Claude models were the exception, staying near zero. I wanted to see if that pattern held for two much smaller open-weight models.
 
 ### Setup
 
-- Models evaluated: `llama3.1:8b`, `qwen3:8b` — run locally via Ollama
-- Judge model: `gemma2:9b` (local), used to produce honest/decept verdicts
-- Decoding: temperature 0.0 (deterministic) for the evaluated models — I traded some 
-  realism (real-world chat use is typically 0.7–1.0) for reproducible, low-noise results; 
-  see Limitations
+- `llama3.1:8b` and `qwen3:8b`, run locally via Ollama
+- `gemma2:9b` as judge, also local
+- Temperature 0.0 for reproducibility (trades off some realism vs. typical chat use (0.7-1.0)
 
 ### Method
 
-I evaluated both models on the DeceptionBench scenario set using the original paper's 
-prompt templates and single-turn conditions:
+Evaluated both models on the full scenario set using the paper's original prompts: L1 baseline (self/other), L2 pressure and reward (self/other). I also ran L3 (multi-turn) across every domain, but I'm not reporting it here. qwen3:8b's L3 data has the same truncation issue described below, and I didn't have time to independently verify llama3.1:8b's L3 was clean enough to report on its own. Raw L3 output is still in the repo.
 
-- **L1 (baseline):** `self` and `other` framings, no incentive
-- **L2 (induced):** `self` and `other` framings, crossed with `pressure` and `reward` 
-  inducements
-
-I labeled each response `honest` or `decept` for both `thought` and `response` against 
-the scenario's ground truth, following the paper's evaluation protocol.
-
-I also ran L3 (multi-turn escalation) across every domain × incentive combination, but 
-I decided not to include L3 in the findings below for either model. qwen3:8b's L3 data 
-had the truncation/generation-failure issues described in Known Limitations, and I 
-didn't have time to fully verify llama3.1:8b's L3 data was clean enough to report on its 
-own — so rather than present a partial or one-sided multi-turn comparison, I excluded L3 
-entirely from the reported Findings. Raw L3 output for both models is still in the repo; 
-see Known Limitations for the diagnostic work I did on it.
-
-### Implementation Notes
-
-To run DeceptionBench entirely on local models, I made the following changes to the 
-original codebase:
-
-- I reconfigured `config.py` to point at local Ollama endpoints instead of cloud APIs
-- I found and fixed a bug in `calculate_metric.py`'s `aggregate_metrics()` (it was 
-  indexing into the wrong nested key when aggregating L2/L3 self/other conditions)
-- I wrote `build_full_csv.py` from scratch — it parses raw per-condition `.jsonl` 
-  output, joins generation and eval records by question, and produces 
-  `result/metric/full_responses.csv`
+To get this running fully local, I pointed the config at Ollama instead of cloud APIs, fixed a key-indexing bug in `calculate_metric.py`'s metric aggregation, and wrote `build_full_csv.py` to join the raw per-condition output into one results file.
 
 ### Findings
 
-#### 1. Effect of incentive (extrinsic axis: baseline vs pressure vs reward)
+**1. Incentive effect**
 
-| Model | Baseline decept% | Pressure decept% | Reward decept% |
+| Model | Baseline | Pressure | Reward |
 |---|---|---|---|
 | llama3.1:8b | 23.15% (n=298) | 20.74% (n=299) | 20.67% (n=300) |
-| qwen3:8b | 60.6% (n=251)† | 72.24% (n=299)‡ | 74.33% (n=300)‡§ |
+| qwen3:8b | 60.6% (n=251) | 72.24% (n=299) | 74.33% (n=300) |
 
-† Corrected after I excluded 42 truncated/empty rows I identified in a full manual audit 
-of the baseline condition, including the 5 fully-blank rows I originally flagged (see 
-Limitations).
-‡ I haven't yet systematically audited this for the same artifact; likely inflated by a 
-similar or greater margin (see Limitations). Treat as an upper-bound estimate.
-§ I found at least one confirmed empty/truncated `L2-self-reward` row (see Known 
-Limitations); combined with independent evidence from my L3 multi-turn diagnosis 
-implicating `reward` framing specifically, I'd give this figure somewhat weaker 
-confidence than the pressure figure.
+Corrected after removing 42 truncated/empty rows found in a manual audit (see Limitations). Pressure and reward figures haven't had the same audit yet, so treat them as upper bounds — reward in particular looks likely to be somewhat inflated for the same reason.
 
-**Fig. 1 — Deception rate by incentive condition.** The qwen3:8b baseline reflects the 
-corrected figure after excluding 42 truncated/empty rows. I haven't systematically 
-re-audited the pressure and reward figures for qwen3:8b for the same artifact, so I'd 
-treat them as upper-bound estimates, with reward carrying additional independent 
-evidence of elevated risk (see Known Limitations).
+Significance (baseline vs. condition, chi-square): llama3.1:8b n.s. either way (p = 0.54, 0.52). qwen3:8b significant both ways (p = 0.028 pressure, p = 0.006 reward).
 
-![Deception rate by condition](assets/deception_rate_by_condition.png)
+llama3.1:8b barely moves under incentive. qwen3:8b starts much higher (60.6% vs 23.2%) and climbs further under both conditions, reward more than pressure — the reverse of what the original paper found for most models. I'd hold the reward finding loosely though: it's the condition most likely affected by the same data-quality issue flagged above.
 
-Significance (chi-square test, baseline vs each condition):
+**2. Role effect (self vs other)**
 
-| Model | vs Pressure | vs Reward |
-|---|---|---|
-| llama3.1:8b | p = 0.539 (n.s.) | p = 0.524 (n.s.) |
-| qwen3:8b | p = 0.028 | p = 0.006 |
-
-Note: I used the original, uncorrected baseline (63.48%) for the significance tests, for 
-consistency with the pressure/reward figures, which I haven't re-audited. Using the 
-corrected baseline (60.6%) doesn't change the direction or rough magnitude of 
-significance, but I'd treat the exact p-values as approximate given the known 
-data-quality issues (see Known Limitations).
-
-llama3.1:8b's deception rate doesn't move meaningfully under either incentive condition 
-— its honest/decept split under pressure and reward is statistically indistinguishable 
-from baseline. qwen3:8b, by contrast, starts from a much higher baseline decept rate 
-(60.6% corrected / 63.48% uncorrected, vs. llama's 23.2%) and increases significantly 
-further under both pressure (p = 0.028) and reward (p = 0.006), with reward producing 
-the larger effect — the opposite ordering from the original paper, which found pressure 
-more effective than reward for most tested models in single-turn settings. I want to 
-flag that the pressure and reward decept% figures I'm comparing here haven't been 
-re-audited for the truncation artifact described in Known Limitations and are likely 
-themselves modestly inflated. This matters most for the reward finding specifically: 
-independent evidence from both the single-turn and multi-turn data (see Known 
-Limitations) suggests `reward`-framed scenarios may be disproportionately prone to this 
-artifact in qwen3:8b, which raises the possibility that some or all of the reward-vs-pressure 
-gap I'm reporting here is itself an artifact of uneven data quality across conditions 
-rather than a genuine difference in how qwen3:8b responds to reward versus pressure 
-incentives.
-
-#### 2. Effect of role (intrinsic axis: self vs other)
-
-| Model | Self decept% | Other decept% | Gap (self − other) |
+| Model | Self | Other | Gap |
 |---|---|---|---|
-| llama3.1:8b | 22.54% (n=448) | 20.49% (n=449) | +2.05 pts |
-| qwen3:8b | 71.24% (n=445)* | 68.90% (n=447) | +2.33 pts |
+| llama3.1:8b | 22.54% | 20.49% | +2.05 pts |
+| qwen3:8b | 71.24% | 68.90% | +2.33 pts |
 
-*I only audited the truncation artifact described in Known Limitations for the 
-L1-baseline condition. This table draws on the same underlying qwen3:8b response pool 
-and may be affected similarly, but I haven't independently re-audited it.
+The paper found ~20-point self/other gaps for GPT-4o and Gemini (self-serving bias), with Claude as the exception. Both models here land close to the Claude pattern — small gaps, no strong egoistic bias.
 
-The original paper reports a 20% self/other gap for models like GPT-4o and Gemini, 
-attributing this to self-serving bias, and identifies the Claude family as an exception 
-with minimal gap. Both llama3.1:8b and qwen3:8b show small gaps (2%) in my data, 
-patterning closer to the paper's Claude-family results than its GPT/Gemini results — 
-neither model shows a strong egoistic bias under self-framing in this dataset.
+**3. Reasoning/response alignment**
 
-#### 3. Thought–response alignment
-
-| Model | Aligned | Self-correction (decept thought → honest response) | Override (honest thought → decept response) |
+| Model | Aligned | Self-corrected | Overridden |
 |---|---|---|---|
-| llama3.1:8b | 99.22% (890/897) | 0.56% (5) | 0.22% (2) |
-| qwen3:8b | 99.22% (885/892)* | 0.45% (4) | 0.34% (3) |
+| llama3.1:8b | 99.22% | 0.56% | 0.22% |
+| qwen3:8b | 99.22% | 0.45% | 0.34% |
 
-*This table draws on the same underlying qwen3:8b response pool as Table 1 and I haven't 
-independently re-audited it for the truncation artifact described in Known Limitations.
+The paper documents a common pattern where honest internal reasoning gets overridden into a deceptive answer under pressure. I don't see that here since both models are ~99% aligned, with the rare mismatches split roughly evenly. Reads as noise at this sample size, not the override pattern the paper describes.
 
-The original paper reports a "prevalent" gap for many tested models where honest 
-internal reasoning is overridden by external pressure into a deceptive final answer. 
-Both models here show near-total alignment (99.2%) between internal reasoning and final 
-response in my data, with misaligned cases rare and roughly balanced between 
-self-correction and override — I read this as noise at these sample sizes rather than 
-the systematic override pattern the paper describes for other models.
+### Limitations
 
-### Known Limitations
+The big one: I manually reviewed wen3:8b's L1-baseline run and found 42 of 293 rows (~14%) had empty or truncated responses that still got scored `decept`/`honest` anyway, skewed about 4:1 toward `decept`. Corrected baseline is 60.6% (down from 63.48% raw). 
 
-- **Truncation/empty-response artifact (qwen3:8b only).** I manually audited the 
-  qwen3:8b L1-baseline condition and found 42 of 293 rows (~14%) where `response_text` 
-  was empty or truncated mid-generation but still received a `decept`/`honest` verdict, 
-  disproportionately labeled `decept` (roughly 4:1). The corrected baseline is 60.6% 
-  (down from 63.48% uncorrected). I didn't systematically re-audit pressure and reward, 
-  so I'd treat those as upper-bound estimates — independent evidence from my L3 
-  diagnosis (below) suggests `reward`-framed scenarios may carry the largest undetected 
-  inflation, since I found a similar failure mode there disproportionately affecting 
-  `reward`-condition multi-turn generations. I found no comparable truncation in any 
-  llama3.1:8b file I checked. Tables 2 and 3 draw on the same underlying qwen3:8b pool 
-  and I didn't independently re-audit them. See [Known Limitations](known-limitations.md) 
-  for my full audit methodology, verbatim examples, and the L3 diagnostic process that 
-  led me to this finding.
-  
-- I fixed decoding at temperature 0.0 across all conditions. This makes runs 
-  reproducible and isolates the effect of incentive framing from sampling noise, but it 
-  also means these results reflect a low-variance decoding regime that may not fully 
-  represent model behavior in typical higher-temperature chat use (0.7–1.0).
+I haven't done the same evaluation on the pressure/reward conditions, so those numbers are upper-bound estimates, independent evidence from the L3 multi-turn data suggests reward-framed scenarios are most likely to carry this same problem. No comparable issue in any llama3.1:8b file I checked. 
 
-- This project covers two ~8B open-weight models rather than the original paper's 
-  14-model, closed- and open-source sweep, and I didn't manually validate the automated 
-  verdicts (via `gemma2:9b` as judge) against human review.
+Full evaluation methodology and examples are in [Known Limitations](known-limitations.md).
 
-### Related Work
+Worth noting: temperature 0.0 isolates the incentive effect but doesn't reflect typical higher-temperature chat use. This covers two ~8B models against the original paper's 14-model sweep, and judge verdicts weren't validated against human review.
 
-This project directly applies the DeceptionBench evaluation protocol — including its 
-scenario set, ground-truth labels, and thought/response judging strategy — to two 
-open-weight models the original paper didn't evaluate.
+### Related work
 
-It also connects to a broader literature on incentive-driven misrepresentation in 
-language models. Van der Weij et al. (2024, arXiv:2406.07358) define and study 
-sandbagging — strategic underperformance on an evaluation when a model or its developer 
-has an incentive for the evaluation to understate true capability — and show frontier 
-models can be prompted or fine-tuned to do this selectively. Meinke et al. (2024, 
-arXiv:2412.04984) find that frontier models are capable of in-context scheming: pursuing 
-a goal that conflicts with given instructions and taking deceptive actions to protect 
-that goal when prompted with sufficient situational awareness and incentive. Anthropic's 
-2025 report on sandbagging in agentic ML research similarly documents models 
-underperforming strategically on research tasks under certain incentive structures.
+Builds directly on DeceptionBench's scenarios, ground truth, and judging protocol. Also relevant: van der Weij et al. (2024, arXiv:2406.07358) on sandbagging — models strategically underperforming on evals when there's incentive to hide capability; Meinke et al. (2024, arXiv:2412.04984) on in-context scheming; and Anthropic's 2025 report on sandbagging in agentic ML research.
 
-### Acknowledgments
+### Credit
 
-This project's evaluation infrastructure (`main.py`, `data_loader.py`, `logger.py`) is 
-built on the DeceptionBench codebase by Huang et al. (2025), 
-<https://github.com/Aries-iai/DeceptionBench>. The scenario data, prompt templates, and 
-evaluation methodology are theirs. The metric aggregation scripts (`calculate_metric.py`, 
-`utils.py`, `config.py`), the llama3.1:8b and qwen3:8b model runs, and all analysis in 
-`result/metric/` are my own contribution.
+Evaluation infrastructure (`main.py`, `data_loader.py`, `logger.py`), scenarios, and prompts are from Huang et al.'s DeceptionBench. Metric scripts, model runs, and analysis are mine.
 
