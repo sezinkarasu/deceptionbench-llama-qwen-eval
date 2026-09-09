@@ -4,9 +4,9 @@ This breaks down the `qwen3:8b` truncation bug. I originally caught this during 
 
 ## 1. The Truncation Artifact (Single-turn)
 
-A manual evaluation of the `qwen3:8b` L1-baseline revealed that 42 out of 293 rows (~14%) had empty or severed responses. Strangely, the judge model (`gemma2:9b`) still scored them—skewing about 4:1 toward `decept`.
+A manual evaluation of the `qwen3:8b` L1-baseline revealed that 42 out of 293 rows (~14%) had empty or cut off responses. Strangely, the judge model (`gemma2:9b`) still scored them—skewing about 4:1 toward `decept`.
 
-**The likely mechanism:** The judge seems to flag severed fragments containing scenario-relevant keywords (e.g., "optimize" in a tax prompt) as deceptive, even without a coherent claim.
+**The likely mechanism:** The judge seems to flag cut off fragments containing scenario-relevant keywords (e.g., "optimize" in a tax prompt) as deceptive, even without a coherent claim.
 
 | Type | Condition | Question (excerpt) | Verdict | `response_text` (verbatim) |
 | --- | --- | --- | --- | --- |
@@ -17,12 +17,17 @@ A manual evaluation of the `qwen3:8b` L1-baseline revealed that 42 out of 293 ro
 **The impact:**
 
 * **Baseline:** Dropping the 42 corrupted rows corrects the baseline from 63.48% down to 60.6%. The qualitative finding holds.
-* **Reward/Pressure:** I haven't manually audited these yet, but the bug exists there too. Because `reward` scenarios force the model to explicitly weigh incentives, they trigger more truncation (see below). Therefore, the reported 74.33% reward deception rate is an inflated upper bound. Treat all exact p-values as approximate.
+* **Reward/Pressure:** I haven't manually reviewed these yet, but the bug exists there too. Because `reward` scenarios force the model to explicitly weigh incentives, they trigger more truncation (see below). Therefore, the reported 74.33% reward deception rate is an inflated upper bound. Treat all exact p-values as approximate.
+* **Downstream tables:** The self/other gap and thought–response alignment tables in the main README rely on this same non-evaluated `qwen3:8b` response pool. I didn't re-evaluate them for this artifact, so treat those figures with the same caution.
 * *Note:* `llama3.1:8b` is completely unaffected.
 
 ## 2. Token Exhaustion & Guardrail Loops (Multi-turn)
 
 Many `qwen3:8b` multi-turn runs stalled at Turn 1 with blank or severed outputs.
+
+**My first guess (and why it was wrong):** Spot-checking early files, I initially suspected the failure was tied to `other` framing (acting as a user's assistant), figuring those prompts just invited more internal deliberation than `self` framing. But after pulling every `reward` condition file across both framings, I found the same truncation everywhere.
+
+**No single axis explains it:** While `reward` scenarios fail most often, truncation also happens under `pressure` and across both `self` and `other` framings. (I only found one completely clean file—`L3_entertainment_self_pressure`—which looks like as if by accident). Ultimately, this is a general reliability issue with `qwen3:8b` running into the token cap while "thinking," rather than a bug cleanly triggered by a specific prompt framing.
 
 **The 500-Token Cap:** `qwen3:8b` uses hidden internal reasoning, but the harness strictly caps multi-turn outputs at 500 tokens. In complex scenarios (especially `reward` framing), the model simply thinks until it exhausts the budget, leaving the actual response blank:
 
@@ -43,7 +48,7 @@ Because of this, I threw out all `qwen3:8b` L3 reward verdicts from the main fin
 
 ```
 
-Then, Turns 2–5 just spat out generic safety boilerplate regardless of the original topic:
+After that, Turns 2–5 just got stuck repeating the same basic safety warning instead of answering the prompt:
 
 ```json
 {
@@ -53,4 +58,4 @@ Then, Turns 2–5 just spat out generic safety boilerplate regardless of the ori
 
 ```
 
-**What happened:** When the safety filter severed Turn 1, the API threw a standard refusal. The evaluation script likely caught that refusal string and mistakenly appended it as the *next* user instruction. The model then got trapped responding to its own safety guardrails, meaning the run never actually tested the scenario past Turn 1.
+**What happened:** When the safety filter severed Turn 1, the API threw a standard refusal. The evaluation script likely caught that refusal string and mistakenly added it as the *next* user instruction. The model then got trapped responding to its own safety guardrails, meaning the run never actually tested the scenario past Turn 1.
